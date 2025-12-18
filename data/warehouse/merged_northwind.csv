@@ -1,0 +1,49 @@
+OrderId,CustomerId,EmployeeId,DateId,DeliveredFlag,CompanyName,City_x,Country_x,FirstName,LastName,City_y,Country_y,FullDate,Day,Month,MonthName
+30,27,9,20060115,1,Company AA,Las Vegas,USA,Anne,Hellung-Larsen,Seattle,USA,2006-01-15,15,1,January
+31,4,3,20060120,1,Company D,New York,USA,Jan,Kotas,Redmond,USA,2006-01-20,20,1,January
+32,12,4,20060122,1,Company L,Las Vegas,USA,Mariya,Sergienko,Kirkland,USA,2006-01-22,22,1,January
+33,8,6,20060130,1,Company H,Portland,USA,Michael,Neipper,Redmond,USA,2006-01-30,30,1,January
+34,4,9,20060206,1,Company D,New York,USA,Anne,Hellung-Larsen,Seattle,USA,2006-02-06,6,2,February
+35,29,3,20060210,1,Company CC,Denver,USA,Jan,Kotas,Redmond,USA,2006-02-10,10,2,February
+36,3,4,20060223,1,Company C,Los Angelas,USA,Mariya,Sergienko,Kirkland,USA,2006-02-23,23,2,February
+37,6,8,20060306,1,Company F,Milwaukee,USA,Laura,Giussani,Redmond,USA,2006-03-06,6,3,March
+38,28,9,20060310,1,Company BB,Memphis,USA,Anne,Hellung-Larsen,Seattle,USA,2006-03-10,10,3,March
+39,8,3,20060322,1,Company H,Portland,USA,Jan,Kotas,Redmond,USA,2006-03-22,22,3,March
+40,10,4,20060324,1,Company J,Chicago,USA,Mariya,Sergienko,Kirkland,USA,2006-03-24,24,3,March
+41,7,1,20060324,0,Company G,Boise,USA,Nancy,Freehafer,Seattle,USA,2006-03-24,24,3,March
+42,10,1,20060324,1,Company J,Chicago,USA,Nancy,Freehafer,Seattle,USA,2006-03-24,24,3,March
+43,11,1,20060324,0,Company K,Miami,USA,Nancy,Freehafer,Seattle,USA,2006-03-24,24,3,March
+44,1,1,20060324,0,Company A,Seattle,USA,Nancy,Freehafer,Seattle,USA,2006-03-24,24,3,March
+45,28,1,20060407,1,Company BB,Memphis,USA,Nancy,Freehafer,Seattle,USA,2006-04-07,7,4,April
+46,9,7,20060405,1,Company I,Salt Lake City,USA,Robert,Zare,Seattle,USA,2006-04-05,5,4,April
+47,6,6,20060408,1,Company F,Milwaukee,USA,Michael,Neipper,Redmond,USA,2006-04-08,8,4,April
+48,8,4,20060405,1,Company H,Portland,USA,Mariya,Sergienko,Kirkland,USA,2006-04-05,5,4,April
+50,25,9,20060405,1,Company Y,Chicago,USA,Anne,Hellung-Larsen,Seattle,USA,2006-04-05,5,4,April
+51,26,9,20060405,1,Company Z,Miami,USA,Anne,Hellung-Larsen,Seattle,USA,2006-04-05,5,4,April
+55,29,1,20060405,1,Company CC,Denver,USA,Nancy,Freehafer,Seattle,USA,2006-04-05,5,4,April
+56,6,2,20060403,1,Company F,Milwaukee,USA,Andrew,Cencini,Bellevue,USA,2006-04-03,3,4,April
+57,27,9,20060422,1,Company AA,Las Vegas,USA,Anne,Hellung-Larsen,Seattle,USA,2006-04-22,22,4,April
+58,4,3,20060422,1,Company D,New York,USA,Jan,Kotas,Redmond,USA,2006-04-22,22,4,April
+59,12,4,20060422,1,Company L,Las Vegas,USA,Mariya,Sergienko,Kirkland,USA,2006-04-22,22,4,April
+60,8,6,20060430,1,Company H,Portland,USA,Michael,Neipper,Redmond,USA,2006-04-30,30,4,April
+61,4,9,20060407,1,Company D,New York,USA,Anne,Hellung-Larsen,Seattle,USA,2006-04-07,7,4,April
+62,29,3,20060412,1,Company CC,Denver,USA,Jan,Kotas,Redmond,USA,2006-04-12,12,4,April
+63,3,4,20060425,1,Company C,Los Angelas,USA,Mariya,Sergienko,Kirkland,USA,2006-04-25,25,4,April
+64,6,8,20060509,1,Company F,Milwaukee,USA,Laura,Giussani,Redmond,USA,2006-05-09,9,5,May
+65,28,9,20060511,1,Company BB,Memphis,USA,Anne,Hellung-Larsen,Seattle,USA,2006-05-11,11,5,May
+66,8,3,20060524,1,Company H,Portland,USA,Jan,Kotas,Redmond,USA,2006-05-24,24,5,May
+67,10,4,20060524,1,Company J,Chicago,USA,Mariya,Sergienko,Kirkland,USA,2006-05-24,24,5,May
+68,7,1,20060524,0,Company G,Boise,USA,Nancy,Freehafer,Seattle,USA,2006-05-24,24,5,May
+69,10,1,20060524,0,Company J,Chicago,USA,Nancy,Freehafer,Seattle,USA,2006-05-24,24,5,May
+70,11,1,20060524,0,Company K,Miami,USA,Nancy,Freehafer,Seattle,USA,2006-05-24,24,5,May
+71,1,1,20060524,0,Company A,Seattle,USA,Nancy,Freehafer,Seattle,USA,2006-05-24,24,5,May
+72,28,1,20060607,1,Company BB,Memphis,USA,Nancy,Freehafer,Seattle,USA,2006-06-07,7,6,June
+73,9,7,20060605,1,Company I,Salt Lake City,USA,Robert,Zare,Seattle,USA,2006-06-05,5,6,June
+74,6,6,20060608,1,Company F,Milwaukee,USA,Michael,Neipper,Redmond,USA,2006-06-08,8,6,June
+75,8,4,20060605,1,Company H,Portland,USA,Mariya,Sergienko,Kirkland,USA,2006-06-05,5,6,June
+76,25,9,20060605,1,Company Y,Chicago,USA,Anne,Hellung-Larsen,Seattle,USA,2006-06-05,5,6,June
+77,26,9,20060605,1,Company Z,Miami,USA,Anne,Hellung-Larsen,Seattle,USA,2006-06-05,5,6,June
+78,29,1,20060605,1,Company CC,Denver,USA,Nancy,Freehafer,Seattle,USA,2006-06-05,5,6,June
+79,6,2,20060623,1,Company F,Milwaukee,USA,Andrew,Cencini,Bellevue,USA,2006-06-23,23,6,June
+80,4,2,20060425,0,Company D,New York,USA,Andrew,Cencini,Bellevue,USA,2006-04-25,25,4,April
+81,3,2,20060425,0,Company C,Los Angelas,USA,Andrew,Cencini,Bellevue,USA,2006-04-25,25,4,April
