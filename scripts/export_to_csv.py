@@ -30,8 +30,10 @@ def export_sql_to_csv(export_dir):
     tables = [
         "DimCustomer",
         "DimEmployee",
+        "DimProduct",
         "DimDate",
-        "FactOrders"
+        "FactOrders",
+        "FactOrderDetails"
     ]
     
     try:

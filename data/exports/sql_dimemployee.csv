@@ -1,10 +1,10 @@
-EmployeeId,FirstName,LastName,City,Country
-1,Nancy,Freehafer,Seattle,USA
-2,Andrew,Cencini,Bellevue,USA
-3,Jan,Kotas,Redmond,USA
-4,Mariya,Sergienko,Kirkland,USA
-5,Steven,Thorpe,Seattle,USA
-6,Michael,Neipper,Redmond,USA
-7,Robert,Zare,Seattle,USA
-8,Laura,Giussani,Redmond,USA
-9,Anne,Hellung-Larsen,Seattle,USA
+EmployeeId,FirstName,LastName,Title,BirthDate,HireDate,City,Region,Country,HomePhone
+1,Nancy,Freehafer,Sales Representative,,,Seattle,WA,USA,(123)555-0102
+2,Andrew,Cencini,"Vice President, Sales",,,Bellevue,WA,USA,(123)555-0102
+3,Jan,Kotas,Sales Representative,,,Redmond,WA,USA,(123)555-0102
+4,Mariya,Sergienko,Sales Representative,,,Kirkland,WA,USA,(123)555-0102
+5,Steven,Thorpe,Sales Manager,,,Seattle,WA,USA,(123)555-0102
+6,Michael,Neipper,Sales Representative,,,Redmond,WA,USA,(123)555-0102
+7,Robert,Zare,Sales Representative,,,Seattle,WA,USA,(123)555-0102
+8,Laura,Giussani,Sales Coordinator,,,Redmond,WA,USA,(123)555-0102
+9,Anne,Hellung-Larsen,Sales Representative,,,Seattle,WA,USA,(123)555-0102

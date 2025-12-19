@@ -1,0 +1,46 @@
+ProductId,ProductName,Category,UnitPrice
+1,Northwind Traders Chai,Beverages,18.0
+3,Northwind Traders Syrup,Condiments,10.0
+4,Northwind Traders Cajun Seasoning,Condiments,22.0
+5,Northwind Traders Olive Oil,Oil,21.35
+6,Northwind Traders Boysenberry Spread,"Jams, Preserves",25.0
+7,Northwind Traders Dried Pears,Dried Fruit & Nuts,30.0
+8,Northwind Traders Curry Sauce,Sauces,40.0
+14,Northwind Traders Walnuts,Dried Fruit & Nuts,23.25
+17,Northwind Traders Fruit Cocktail,Canned Fruit & Vegetables,39.0
+19,Northwind Traders Chocolate Biscuits Mix,Baked Goods & Mixes,9.2
+20,Northwind Traders Marmalade,"Jams, Preserves",81.0
+21,Northwind Traders Scones,Baked Goods & Mixes,10.0
+34,Northwind Traders Beer,Beverages,14.0
+40,Northwind Traders Crab Meat,Canned Meat,18.4
+41,Northwind Traders Clam Chowder,Soups,9.65
+43,Northwind Traders Coffee,Beverages,46.0
+48,Northwind Traders Chocolate,Candy,12.75
+51,Northwind Traders Dried Apples,Dried Fruit & Nuts,53.0
+52,Northwind Traders Long Grain Rice,Grains,7.0
+56,Northwind Traders Gnocchi,Pasta,38.0
+57,Northwind Traders Ravioli,Pasta,19.5
+65,Northwind Traders Hot Pepper Sauce,Sauces,21.05
+66,Northwind Traders Tomato Sauce,Sauces,17.0
+72,Northwind Traders Mozzarella,Dairy Products,34.8
+74,Northwind Traders Almonds,Dried Fruit & Nuts,10.0
+77,Northwind Traders Mustard,Condiments,13.0
+80,Northwind Traders Dried Plums,Dried Fruit & Nuts,3.5
+81,Northwind Traders Green Tea,Beverages,2.99
+82,Northwind Traders Granola,Cereal,4.0
+83,Northwind Traders Potato Chips,"Chips, Snacks",1.8
+85,Northwind Traders Brownie Mix,Baked Goods & Mixes,12.49
+86,Northwind Traders Cake Mix,Baked Goods & Mixes,15.99
+87,Northwind Traders Tea,Beverages,4.0
+88,Northwind Traders Pears,Canned Fruit & Vegetables,1.3
+89,Northwind Traders Peaches,Canned Fruit & Vegetables,1.5
+90,Northwind Traders Pineapple,Canned Fruit & Vegetables,1.8
+91,Northwind Traders Cherry Pie Filling,Canned Fruit & Vegetables,2.0
+92,Northwind Traders Green Beans,Canned Fruit & Vegetables,1.2
+93,Northwind Traders Corn,Canned Fruit & Vegetables,1.2
+94,Northwind Traders Peas,Canned Fruit & Vegetables,1.5
+95,Northwind Traders Tuna Fish,Canned Meat,2.0
+96,Northwind Traders Smoked Salmon,Canned Meat,4.0
+97,Northwind Traders Hot Cereal,Cereal,5.0
+98,Northwind Traders Vegetable Soup,Soups,1.89
+99,Northwind Traders Chicken Soup,Soups,1.95

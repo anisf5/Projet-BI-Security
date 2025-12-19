@@ -74,7 +74,7 @@ def create_delivery_stats(df):
         title='Order Delivery Status',
         showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        annotations=[dict(text=f"{len(df)}<br>Orders", x=0.5, y=0.5, font_size=20, showarrow=False, font_color=THEME_COLORS['text'])]
+        annotations=[dict(text=f"{len(df)}<br>Items", x=0.5, y=0.5, font_size=20, showarrow=False, font_color=THEME_COLORS['text'])]
     )
     
     apply_theme(fig)
@@ -82,12 +82,36 @@ def create_delivery_stats(df):
     png_path = os.path.join(FIGURES_DIR, "delivery_stats.png")
     fig.write_html(html_path)
     fig.write_image(png_path)
-    print(f"Saved {html_path} and {png_path}")
+    print(f"Saved {html_path}")
+    return fig
+
+def create_revenue_by_category(df):
+    """Create interactive bar chart for revenue by category"""
+    cat_rev = df.groupby('Category')['Revenue'].sum().reset_index().sort_values('Revenue', ascending=False)
+    
+    fig = px.bar(
+        cat_rev,
+        x='Category',
+        y='Revenue',
+        title='Revenue by Product Category',
+        color='Revenue',
+        color_continuous_scale='Viridis',
+        text_auto='.2s'
+    )
+    
+    fig.update_layout(xaxis_title="", yaxis_title="Revenue ($)")
+    apply_theme(fig)
+    
+    html_path = os.path.join(FIGURES_DIR, "revenue_by_category_interactive.html")
+    png_path = os.path.join(FIGURES_DIR, "revenue_by_category.png")
+    fig.write_html(html_path)
+    fig.write_image(png_path)
+    print(f"Saved {html_path}")
     return fig
 
 def create_orders_by_country(df):
     """Create interactive bar chart for orders by country"""
-    country_orders = df['Country_x'].value_counts().reset_index().head(10)
+    country_orders = df['Country'].value_counts().reset_index().head(10)
     country_orders.columns = ['Country', 'OrderCount']
     
     fig = px.bar(
@@ -107,19 +131,19 @@ def create_orders_by_country(df):
     png_path = os.path.join(FIGURES_DIR, "orders_by_country.png")
     fig.write_html(html_path)
     fig.write_image(png_path)
-    print(f"Saved {html_path} and {png_path}")
+    print(f"Saved {html_path}")
     return fig
 
 def create_monthly_trend(df):
     """Create interactive area chart for monthly trends"""
     df['YearMonth'] = df['FullDate'].dt.to_period('M').astype(str)
-    monthly_orders = df.groupby('YearMonth').size().reset_index(name='OrderCount')
+    monthly_rev = df.groupby('YearMonth')['Revenue'].sum().reset_index()
     
     fig = px.area(
-        monthly_orders,
+        monthly_rev,
         x='YearMonth',
-        y='OrderCount',
-        title='Monthly Order Growth',
+        y='Revenue',
+        title='Monthly Revenue Growth',
         markers=True
     )
     
@@ -129,29 +153,29 @@ def create_monthly_trend(df):
         fillcolor='rgba(137, 180, 250, 0.2)'
     )
     
-    fig.update_layout(xaxis_title="", yaxis_title="Orders", hovermode='x unified')
+    fig.update_layout(xaxis_title="", yaxis_title="Revenue ($)", hovermode='x unified')
     
     apply_theme(fig)
     html_path = os.path.join(FIGURES_DIR, "monthly_trend_interactive.html")
-    png_path = os.path.join(FIGURES_DIR, "orders_trend.png")
+    png_path = os.path.join(FIGURES_DIR, "revenue_trend.png")
     fig.write_html(html_path)
     fig.write_image(png_path)
-    print(f"Saved {html_path} and {png_path}")
+    print(f"Saved {html_path}")
     return fig
 
 def create_3d_scatter(df):
-    """Create interactive 3D scatter plot"""
+    """Create interactive 3D scatter plot using Revenue"""
     df['MonthNum'] = df['FullDate'].dt.month
-    agg = df.groupby(['MonthNum', 'Country_x']).size().reset_index(name='OrderCount')
+    agg = df.groupby(['MonthNum', 'Country'])['Revenue'].sum().reset_index()
     
     fig = px.scatter_3d(
         agg,
         x='MonthNum',
-        y='Country_x',
-        z='OrderCount',
-        color='OrderCount',
-        size='OrderCount',
-        title='3D Analysis: Seasonality vs Geography',
+        y='Country',
+        z='Revenue',
+        color='Revenue',
+        size='Revenue',
+        title='3D Analysis: Revenue Seasonality vs Geography',
         color_continuous_scale='Viridis',
         opacity=0.8
     )
@@ -160,7 +184,7 @@ def create_3d_scatter(df):
         scene=dict(
             xaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Month'),
             yaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Country'),
-            zaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Volume'),
+            zaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Revenue'),
         ),
         margin=dict(l=0, r=0, b=0, t=50),
         height=800
@@ -172,11 +196,11 @@ def create_3d_scatter(df):
     png_path = os.path.join(FIGURES_DIR, "3d_orders.png")
     fig.write_html(html_path)
     fig.write_image(png_path)
-    print(f"Saved {html_path} and {png_path}")
+    print(f"Saved {html_path}")
     return fig
 
 def create_employee_explorer(df):
-    """Create a Plotly figure with a dropdown to select an employee and see their orders over time."""
+    """Create a Plotly figure with a dropdown for employees showing their revenue over time."""
     df['EmployeeName'] = df['FirstName'].astype(str) + ' ' + df['LastName'].astype(str)
     employees = sorted(df['EmployeeName'].unique())
     
@@ -185,11 +209,11 @@ def create_employee_explorer(df):
     for emp in employees:
         emp_df = df[df['EmployeeName'] == emp].copy()
         emp_df['YearMonth'] = emp_df['FullDate'].dt.to_period('M').astype(str)
-        monthly = emp_df.groupby('YearMonth').size().reset_index(name='OrderCount')
+        monthly = emp_df.groupby('YearMonth')['Revenue'].sum().reset_index()
         
         fig.add_trace(go.Bar(
             x=monthly['YearMonth'],
-            y=monthly['OrderCount'],
+            y=monthly['Revenue'],
             name=emp,
             visible=(emp == employees[0]),
             marker_color=THEME_COLORS['primary']
@@ -200,7 +224,7 @@ def create_employee_explorer(df):
             method="update",
             label=emp,
             args=[{"visible": [emp == e for e in employees]},
-                  {"title": f"Order Trend: {emp}"}]
+                  {"title": f"Revenue Trend: {emp}"}]
         ) for emp in employees
     ]
 
@@ -213,9 +237,9 @@ def create_employee_explorer(df):
             bgcolor=THEME_COLORS['background'],
             font=dict(color=THEME_COLORS['text'])
         )],
-        title=f"Order Trend: {employees[0]}",
+        title=f"Revenue Trend: {employees[0]}",
         xaxis_title="Month",
-        yaxis_title="Orders"
+        yaxis_title="Revenue ($)"
     )
     
     apply_theme(fig)
@@ -225,7 +249,7 @@ def create_employee_explorer(df):
     return fig
 
 def create_dashboard(df):
-    """Create a unified premium dashboard"""
+    """Create a unified premium dashboard with Revenue focus"""
     fig = make_subplots(
         rows=3, cols=2,
         specs=[
@@ -234,12 +258,12 @@ def create_dashboard(df):
             [{'type': 'xy'}, {'type': 'xy'}]     
         ],
         subplot_titles=(
-            'Delivery Performance', 'Top Regions', 
-            'Global Order Trend', 
-            'Top Performing Employees', 'Delivery Efficiency by Country'
+            'Delivery Performance', 'Revenue by Category', 
+            'Global Revenue Trend', 
+            'Top Countries by Revenue', 'Revenue by Employee'
         ),
         vertical_spacing=0.12,
-        horizontal_spacing=0.05
+        horizontal_spacing=0.08
     )
 
     delivery_counts = df['DeliveredFlag'].value_counts()
@@ -252,19 +276,19 @@ def create_dashboard(df):
         showlegend=False
     ), row=1, col=1)
 
-    country_orders = df['Country_x'].value_counts().head(5).reset_index()
+    cat_rev = df.groupby('Category')['Revenue'].sum().head(5).reset_index()
     fig.add_trace(go.Bar(
-        x=country_orders['Country_x'], 
-        y=country_orders['count'],
-        marker=dict(color=country_orders['count'], colorscale='Bluyl'),
+        x=cat_rev['Category'], 
+        y=cat_rev['Revenue'],
+        marker=dict(color=cat_rev['Revenue'], colorscale='Viridis'),
         showlegend=False
     ), row=1, col=2)
 
     df['YearMonth'] = df['FullDate'].dt.to_period('M').astype(str)
-    monthly = df.groupby('YearMonth').size().reset_index(name='OrderCount')
+    monthly = df.groupby('YearMonth')['Revenue'].sum().reset_index()
     fig.add_trace(go.Scatter(
         x=monthly['YearMonth'], 
-        y=monthly['OrderCount'],
+        y=monthly['Revenue'],
         mode='lines', 
         fill='tozeroy',
         line=dict(color=THEME_COLORS['primary'], width=3),
@@ -272,37 +296,35 @@ def create_dashboard(df):
         showlegend=False
     ), row=2, col=1)
 
-    df['EmployeeName'] = df['FirstName'] + ' ' + df['LastName']
-    employee_orders = df['EmployeeName'].value_counts().head(5).sort_values(ascending=True).reset_index()
+    country_rev = df.groupby('Country')['Revenue'].sum().sort_values(ascending=False).head(5).sort_values().reset_index()
     fig.add_trace(go.Bar(
-        y=employee_orders['EmployeeName'], 
-        x=employee_orders['count'],
+        y=country_rev['Country'], 
+        x=country_rev['Revenue'],
         orientation='h',
         marker=dict(color=THEME_COLORS['warning']),
         showlegend=False
     ), row=3, col=1)
 
-    del_country = df[df['DeliveredFlag'] == 1]['Country_x'].value_counts().head(5).reset_index()
+    emp_rev = df.groupby('FirstName')['Revenue'].sum().sort_values(ascending=False).head(5).reset_index()
     fig.add_trace(go.Bar(
-        x=del_country['Country_x'],
-        y=del_country['count'],
+        x=emp_rev['FirstName'],
+        y=emp_rev['Revenue'],
         marker=dict(color=THEME_COLORS['accent']),
         showlegend=False
     ), row=3, col=2)
 
     fig.update_layout(
         height=1200,
-        title_text="<b>Northwind Analytics Dashboard</b>",
+        title_text="<b>Northwind Strategic Business Dashboard</b>",
         title_x=0.5,
         **COMMON_LAYOUT
     )
-    fig.update_yaxes(showgrid=False, zeroline=False, row=3, col=1)
     
     html_path = os.path.join(FIGURES_DIR, "dashboard_interactive.html")
     png_path = os.path.join(FIGURES_DIR, "dashboard_interactive.png")
     fig.write_html(html_path)
     fig.write_image(png_path)
-    print(f"Stats: Dashboard generated at {html_path} and {png_path}")
+    print(f"Stats: Dashboard generated at {html_path}")
     return fig
 
 def generate_all_figures():
@@ -311,6 +333,7 @@ def generate_all_figures():
     try:
         df = load_data()
         create_delivery_stats(df)
+        create_revenue_by_category(df)
         create_orders_by_country(df)
         create_monthly_trend(df)
         create_3d_scatter(df)
@@ -318,6 +341,8 @@ def generate_all_figures():
         create_dashboard(df)
         print("--- Success ---")
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(f"[ERROR] {e}")
 
 if __name__ == "__main__":

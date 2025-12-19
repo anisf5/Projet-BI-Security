@@ -18,7 +18,8 @@ plt.rcParams['savefig.dpi'] = 300
 plt.rcParams['font.family'] = 'sans-serif'
 
 def get_connection():
-    conn_str = f"DRIVER={{SQL Server}};SERVER={SQL_SERVER};DATABASE={SQL_DATABASE};Trusted_Connection=yes;"
+    from settings import SQL_DRIVER
+    conn_str = f"DRIVER={{{SQL_DRIVER}}};SERVER={SQL_SERVER};DATABASE={SQL_DATABASE};Trusted_Connection=yes;"
     return pyodbc.connect(conn_str)
 
 def generate_charts():
@@ -28,22 +29,32 @@ def generate_charts():
         print(f"[WARN] Could not connect to SQL Server: {e}. Skipping static chart generation.")
         return
     
-    print("Generating: Orders by Country...")
-    df = pd.read_sql("SELECT c.Country, COUNT(f.OrderId) as OrderCount FROM FactOrders f JOIN DimCustomer c ON f.CustomerId = c.CustomerId GROUP BY c.Country ORDER BY OrderCount DESC", conn)
+    print("Generating: Revenue by Country...")
+    query = """
+    SELECT c.Country, SUM(fd.UnitPrice * fd.Quantity * (1 - fd.Discount)) as TotalRevenue 
+    FROM FactOrderDetails fd
+    JOIN FactOrders f ON fd.OrderId = f.OrderId
+    JOIN DimCustomer c ON f.CustomerId = c.CustomerId 
+    GROUP BY c.Country 
+    HAVING SUM(fd.UnitPrice * fd.Quantity * (1 - fd.Discount)) > 0
+    ORDER BY TotalRevenue DESC
+    """
+    df = pd.read_sql(query, conn)
     
     plt.figure()
-    ax = sns.barplot(data=df.head(10), x="OrderCount", y="Country", palette="crest", hue="Country", legend=False)
-    ax.set_title("Top 10 Active Countries", fontsize=20, fontweight='bold', pad=20)
-    ax.set_xlabel("Number of Orders", fontsize=12)
+    ax = sns.barplot(data=df.head(10), x="TotalRevenue", y="Country", palette="viridis", hue="Country", legend=False)
+    ax.set_title("Top 10 Markets by Revenue", fontsize=20, fontweight='bold', pad=20)
+    ax.set_xlabel("Revenue ($)", fontsize=12)
     ax.set_ylabel("")
     plt.tight_layout()
     plt.savefig(f"{FIGURES_DIR}/orders_by_country.png")
     plt.close()
 
-    print("Generating: Order Trend...")
+    print("Generating: Revenue Trend...")
     query = """
-    SELECT FullDate, COUNT(OrderId) as DailyOrders 
-    FROM FactOrders f 
+    SELECT FullDate, SUM(fd.UnitPrice * fd.Quantity * (1 - fd.Discount)) as DailyRevenue 
+    FROM FactOrderDetails fd
+    JOIN FactOrders f ON fd.OrderId = f.OrderId
     JOIN DimDate d ON f.DateId = d.DateId 
     WHERE FullDate IS NOT NULL 
     GROUP BY FullDate 
@@ -52,37 +63,34 @@ def generate_charts():
     df = pd.read_sql(query, conn)
     
     plt.figure()
-
-    sns.lineplot(data=df, x="FullDate", y="DailyOrders", color="#89b4fa", linewidth=3)
-    plt.fill_between(df["FullDate"], df["DailyOrders"], color="#89b4fa", alpha=0.2)
+    sns.lineplot(data=df, x="FullDate", y="DailyRevenue", color="#89b4fa", linewidth=3)
+    plt.fill_between(df["FullDate"], df["DailyRevenue"], color="#89b4fa", alpha=0.2)
     
-
-    plt.title("Daily Orders Volume", fontsize=20, fontweight='bold', pad=20)
+    plt.title("Daily Revenue Performance", fontsize=20, fontweight='bold', pad=20)
     plt.xlabel("Date", fontsize=12)
-    plt.ylabel("Orders", fontsize=12)
-    
+    plt.ylabel("Revenue ($)", fontsize=12)
     plt.grid(True, linestyle='--', alpha=0.3)
     plt.xticks(rotation=45)
-    
     plt.tight_layout()
     plt.savefig(f"{FIGURES_DIR}/orders_trend.png")
     plt.close()
 
-    print("Generating: Employee Performance...")
+    print("Generating: Employee Revenue Performance...")
     query = """
-    SELECT e.FirstName, COUNT(f.OrderId) as Orders 
-    FROM FactOrders f 
+    SELECT e.FirstName, SUM(fd.UnitPrice * fd.Quantity * (1 - fd.Discount)) as Revenue 
+    FROM FactOrderDetails fd
+    JOIN FactOrders f ON fd.OrderId = f.OrderId
     JOIN DimEmployee e ON f.EmployeeId = e.EmployeeId 
     GROUP BY e.FirstName 
-    ORDER BY Orders DESC
+    ORDER BY Revenue DESC
     """
     df = pd.read_sql(query, conn)
     
     plt.figure()
-    sns.barplot(data=df, x="FirstName", y="Orders", palette="flare", hue="FirstName", legend=False)
-    plt.title("Employee Performance", fontsize=20, fontweight='bold', pad=20)
+    sns.barplot(data=df, x="FirstName", y="Revenue", palette="flare", hue="FirstName", legend=False)
+    plt.title("Employee Revenue Generation", fontsize=20, fontweight='bold', pad=20)
     plt.xlabel("Employee")
-    plt.ylabel("Total Orders")
+    plt.ylabel("Total Revenue ($)")
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(f"{FIGURES_DIR}/employee_performance.png")
@@ -97,7 +105,7 @@ def generate_html_report():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Northwind B.I. Dashboard</title>
+        <title>Northwind Executive B.I. Dashboard</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
             body { font-family: 'Outfit', sans-serif; background: #11111b; color: #cdd6f4; margin: 0; padding: 40px; }
@@ -116,51 +124,51 @@ def generate_html_report():
     </head>
     <body>
         <header>
-            <h1>Northwind Analytics</h1>
-            <p class="subtitle">Automated Business Intelligence Report</p>
+            <h1>Northwind Executive Analytics</h1>
+            <p class="subtitle">Real-time Revenue and Operational Performance</p>
         </header>
 
         <div class="btn-container">
-            <a href="dashboard_interactive.html" class="btn">View Interactive Dashboard ✨</a>
+            <a href="dashboard_interactive.html" class="btn">Launch Strategic Dashboard ✨</a>
         </div>
 
         <div class="grid">
             <div class="card">
-                <h3>Global Markets</h3>
-                <img src="orders_by_country.png" alt="Orders by Country">
+                <h3>Revenue by Market</h3>
+                <img src="orders_by_country.png" alt="Revenue by Country">
             </div>
             <div class="card">
-                <h3>Delivery Status</h3>
-                <img src="delivery_stats.png" alt="Delivery Status">
+                <h3>Product Category Insights</h3>
+                <img src="revenue_by_category.png" alt="Revenue by Category">
             </div>
             <div class="card">
-                <h3>Top Talent</h3>
-                <img src="employee_performance.png" alt="Employee Performance">
+                <h3>Sales Performance</h3>
+                <img src="employee_performance.png" alt="Employee Revenue">
             </div>
             <div class="card">
-                <h3>Employee Explorer</h3>
+                <h3>Interactive Explorer</h3>
                 <p style="text-align: center; margin-top: 50px;">
-                    <a href="employee_explorer_interactive.html" class="btn">Open Explorer 🔍</a>
+                    <a href="employee_explorer_interactive.html" class="btn">Open Employee Drilldown 🔍</a>
                 </p>
             </div>
             <div class="card">
-                <h3>3D Global View</h3>
-                <img src="3d_orders.png" alt="3D View">
+                <h3>3D Revenue Landscape</h3>
+                <img src="3d_orders.png" alt="3D Revenue View">
             </div>
             <div class="card">
-                <h3>Growth Trajectory</h3>
-                <img src="orders_trend.png" alt="Orders Trend">
+                <h3>Financial Growth</h3>
+                <img src="revenue_trend.png" alt="Revenue Trend">
             </div>
         </div>
         <div class="footer">
-            <p>Generated by Northwind BI Pipeline</p>
+            <p>Generated by Northwind BI Pipeline (Enriched Schema)</p>
         </div>
     </body>
     </html>
     """
     with open(f"{FIGURES_DIR}/index.html", "w", encoding='utf-8') as f:
         f.write(html_content)
-    print(f"Dashboard generated at: {os.path.abspath(f'{FIGURES_DIR}/index.html')}")
+    print(f"Strategic Dashboard generated at: {os.path.abspath(f'{FIGURES_DIR}/index.html')}")
 
 from generate_interactive_figures import generate_all_figures
 

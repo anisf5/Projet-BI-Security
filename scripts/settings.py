@@ -9,6 +9,6 @@ ACCESS_DB_PATH = os.path.join(DATA_DIR, "Northwind 2012.accdb")
 
 SQL_SERVER = r"WIN-4DQD0F0RTQ8\SQLANIS"
 SQL_DATABASE = "Global_Northwind"
-SQL_DRIVER = "SQL Server"
+SQL_DRIVER = "ODBC Driver 17 for SQL Server"
 
 ACCESS_DRIVER = "Microsoft Access Driver (*.mdb, *.accdb)"
