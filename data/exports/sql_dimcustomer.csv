@@ -1,0 +1,30 @@
+CustomerId,CompanyName,City,Country
+1,Company A,Seattle,USA
+10,Company J,Chicago,USA
+11,Company K,Miami,USA
+12,Company L,Las Vegas,USA
+13,Company M,Memphis,USA
+14,Company N,Denver,USA
+15,Company O,Honolulu,USA
+16,Company P,San Francisco,USA
+17,Company Q,Seattle,USA
+18,Company R,Boston,USA
+19,Company S,Los Angelas,USA
+2,Company B,Boston,USA
+20,Company T,New York,USA
+21,Company U,Minneapolis,USA
+22,Company V,Milwaukee,USA
+23,Company W,Portland,USA
+24,Company X,Salt Lake City,USA
+25,Company Y,Chicago,USA
+26,Company Z,Miami,USA
+27,Company AA,Las Vegas,USA
+28,Company BB,Memphis,USA
+29,Company CC,Denver,USA
+3,Company C,Los Angelas,USA
+4,Company D,New York,USA
+5,Company E,Minneapolis,USA
+6,Company F,Milwaukee,USA
+7,Company G,Boise,USA
+8,Company H,Portland,USA
+9,Company I,Salt Lake City,USA
