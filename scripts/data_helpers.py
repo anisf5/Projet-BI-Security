@@ -23,3 +23,18 @@ def fetch_from_access(query):
     except Exception as e:
         print(f"[ERROR] Query failed: {e}")
         return pd.DataFrame()
+
+def get_employees():
+    """Fetches list of employees from Access."""
+    query = "SELECT ID, [First Name] & ' ' & [Last Name] AS FullName FROM Employees"
+    return fetch_from_access(query)
+
+def get_employee_orders(employee_id):
+    """Fetches orders for a specific employee from Access."""
+    query = f"""
+        SELECT O.[Order ID], O.[Order Date], O.[Shipped Date], C.Company AS CustomerName
+        FROM Orders O
+        LEFT JOIN Customers C ON O.[Customer ID] = C.ID
+        WHERE O.[Employee ID] = {employee_id}
+    """
+    return fetch_from_access(query)

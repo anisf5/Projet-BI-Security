@@ -14,6 +14,7 @@ THEME_COLORS = {
     'text': '#cdd6f4',          
     'grid': '#313244',
     'primary': '#89b4fa',       
+    'secondary': '#f5c2e7',
     'accent': '#a6e3a1',          
     'warning': '#fab387',          
     'muted': '#6c7086'
@@ -174,6 +175,55 @@ def create_3d_scatter(df):
     print(f"Saved {html_path} and {png_path}")
     return fig
 
+def create_employee_explorer(df):
+    """Create a Plotly figure with a dropdown to select an employee and see their orders over time."""
+    df['EmployeeName'] = df['FirstName'].astype(str) + ' ' + df['LastName'].astype(str)
+    employees = sorted(df['EmployeeName'].unique())
+    
+    fig = go.Figure()
+
+    for emp in employees:
+        emp_df = df[df['EmployeeName'] == emp].copy()
+        emp_df['YearMonth'] = emp_df['FullDate'].dt.to_period('M').astype(str)
+        monthly = emp_df.groupby('YearMonth').size().reset_index(name='OrderCount')
+        
+        fig.add_trace(go.Bar(
+            x=monthly['YearMonth'],
+            y=monthly['OrderCount'],
+            name=emp,
+            visible=(emp == employees[0]),
+            marker_color=THEME_COLORS['primary']
+        ))
+
+    dropdown_buttons = [
+        dict(
+            method="update",
+            label=emp,
+            args=[{"visible": [emp == e for e in employees]},
+                  {"title": f"Order Trend: {emp}"}]
+        ) for emp in employees
+    ]
+
+    fig.update_layout(
+        updatemenus=[dict(
+            active=0, 
+            buttons=dropdown_buttons, 
+            x=0, y=1.15, 
+            xanchor='left', yanchor='top',
+            bgcolor=THEME_COLORS['background'],
+            font=dict(color=THEME_COLORS['text'])
+        )],
+        title=f"Order Trend: {employees[0]}",
+        xaxis_title="Month",
+        yaxis_title="Orders"
+    )
+    
+    apply_theme(fig)
+    html_path = os.path.join(FIGURES_DIR, "employee_explorer_interactive.html")
+    fig.write_html(html_path)
+    print(f"Saved {html_path}")
+    return fig
+
 def create_dashboard(df):
     """Create a unified premium dashboard"""
     fig = make_subplots(
@@ -264,6 +314,7 @@ def generate_all_figures():
         create_orders_by_country(df)
         create_monthly_trend(df)
         create_3d_scatter(df)
+        create_employee_explorer(df)
         create_dashboard(df)
         print("--- Success ---")
     except Exception as e:

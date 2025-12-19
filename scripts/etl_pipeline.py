@@ -2,6 +2,8 @@
 import pandas as pd
 from data_helpers import fetch_from_access
 from database_manager import clear_tables, load_data
+from settings import DATA_DIR
+import os
 
 def run_etl_pipeline():
     print("--- Starting ETL Pipeline (Access -> SQL Server) ---")
@@ -75,4 +77,28 @@ def run_etl_pipeline():
 
     clear_tables()
     load_data(dim_customers, dim_employees, dim_date, fact_orders)
+    
+    print("Generating denormalized CSV for visualizations...")
+    # enriched_orders starts from raw_orders to keep all columns (Shipping Fee, etc.)
+    enriched_orders = raw_orders.rename(columns={
+        "Order ID": "OrderId",
+        "Customer ID": "CustomerId",
+        "Employee ID": "EmployeeId"
+    })
+    enriched_orders["CustomerId"] = enriched_orders["CustomerId"].fillna(-1).astype(int).astype(str)
+    enriched_orders["EmployeeId"] = enriched_orders["EmployeeId"].fillna(-1).astype(int).astype(str)
+    enriched_orders["DateId"] = enriched_orders["OrderDate_Parsed"].apply(
+        lambda x: int(x.strftime("%Y%m%d")) if pd.notna(x) else None
+    )
+    enriched_orders["DeliveredFlag"] = enriched_orders["Shipped Date"].notna().astype(int)
+
+    merged_df = enriched_orders.merge(dim_customers, on="CustomerId", how="left")
+    merged_df = merged_df.merge(dim_employees, on="EmployeeId", how="left")
+    merged_df = merged_df.merge(dim_date, on="DateId", how="left")
+    
+    warehouse_dir = os.path.join(DATA_DIR, "warehouse")
+    os.makedirs(warehouse_dir, exist_ok=True)
+    merged_df.to_csv(os.path.join(warehouse_dir, "merged_northwind.csv"), index=False)
+    print(f"Denormalized data saved to {os.path.join(warehouse_dir, 'merged_northwind.csv')}")
+    
     print("--- ETL Finished Successfully ---")

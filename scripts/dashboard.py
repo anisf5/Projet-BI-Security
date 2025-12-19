@@ -138,10 +138,16 @@ def generate_html_report():
                 <img src="employee_performance.png" alt="Employee Performance">
             </div>
             <div class="card">
+                <h3>Employee Explorer</h3>
+                <p style="text-align: center; margin-top: 50px;">
+                    <a href="employee_explorer_interactive.html" class="btn">Open Explorer 🔍</a>
+                </p>
+            </div>
+            <div class="card">
                 <h3>3D Global View</h3>
                 <img src="3d_orders.png" alt="3D View">
             </div>
-            <div class="card" style="grid-column: 1 / -1;">
+            <div class="card">
                 <h3>Growth Trajectory</h3>
                 <img src="orders_trend.png" alt="Orders Trend">
             </div>
