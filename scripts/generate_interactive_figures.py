@@ -164,20 +164,24 @@ def create_monthly_trend(df):
     return fig
 
 def create_3d_scatter(df):
-    """Create interactive 3D scatter plot using Revenue"""
+    """Create interactive 3D scatter plot using Revenue with Year selection"""
+    df['Year'] = df['FullDate'].dt.year
     df['MonthNum'] = df['FullDate'].dt.month
-    agg = df.groupby(['MonthNum', 'Country'])['Revenue'].sum().reset_index()
+    
+    # We aggregate by Year, Month, Country for a more detailed view
+    agg = df.groupby(['Year', 'MonthNum', 'Country'])['Revenue'].sum().reset_index()
     
     fig = px.scatter_3d(
         agg,
         x='MonthNum',
         y='Country',
         z='Revenue',
-        color='Revenue',
+        color='Year',
         size='Revenue',
         title='3D Analysis: Revenue Seasonality vs Geography',
         color_continuous_scale='Viridis',
-        opacity=0.8
+        opacity=0.8,
+        labels={'MonthNum': 'Month', 'Revenue': 'Revenue ($)'}
     )
     
     fig.update_layout(
@@ -194,6 +198,45 @@ def create_3d_scatter(df):
     
     html_path = os.path.join(FIGURES_DIR, "3d_orders_interactive.html")
     png_path = os.path.join(FIGURES_DIR, "3d_orders.png")
+    fig.write_html(html_path)
+    fig.write_image(png_path)
+    print(f"Saved {html_path}")
+    return fig
+
+def create_employee_performance_3d(df):
+    """Create a 3D scatter plot of Employee performance across years"""
+    df['Year'] = df['FullDate'].dt.year
+    df['EmployeeName'] = df['FirstName'].astype(str) + ' ' + df['LastName'].astype(str)
+    
+    emp_year_rev = df.groupby(['EmployeeName', 'Year'])['Revenue'].sum().reset_index()
+    
+    fig = px.scatter_3d(
+        emp_year_rev,
+        x='EmployeeName',
+        y='Year',
+        z='Revenue',
+        color='Revenue',
+        size='Revenue',
+        title='3D Analysis: Employee Performance vs Year vs Revenue',
+        color_continuous_scale='Plasma',
+        opacity=0.9,
+        labels={'Revenue': 'Total Revenue ($)'}
+    )
+    
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Employee'),
+            yaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Year'),
+            zaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Revenue'),
+        ),
+        margin=dict(l=0, r=0, b=0, t=50),
+        height=800
+    )
+    
+    fig.update_layout(paper_bgcolor=THEME_COLORS['paper'], font_color=THEME_COLORS['text'])
+    
+    html_path = os.path.join(FIGURES_DIR, "employee_3d_performance_interactive.html")
+    png_path = os.path.join(FIGURES_DIR, "employee_3d_performance.png")
     fig.write_html(html_path)
     fig.write_image(png_path)
     print(f"Saved {html_path}")
@@ -338,6 +381,7 @@ def generate_all_figures():
         create_monthly_trend(df)
         create_3d_scatter(df)
         create_employee_explorer(df)
+        create_employee_performance_3d(df)
         create_dashboard(df)
         print("--- Success ---")
     except Exception as e:
