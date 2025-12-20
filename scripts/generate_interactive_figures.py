@@ -164,27 +164,80 @@ def create_monthly_trend(df):
     return fig
 
 def create_3d_scatter(df):
-    """Create interactive 3D scatter plot using Revenue with Year selection"""
+    """Create interactive 3D scatter plot with Year selection"""
     df['Year'] = df['FullDate'].dt.year
     df['MonthNum'] = df['FullDate'].dt.month
     
-    # We aggregate by Year, Month, Country for a more detailed view
-    agg = df.groupby(['Year', 'MonthNum', 'Country'])['Revenue'].sum().reset_index()
-    
-    fig = px.scatter_3d(
-        agg,
-        x='MonthNum',
-        y='Country',
-        z='Revenue',
-        color='Year',
-        size='Revenue',
-        title='3D Analysis: Revenue Seasonality vs Geography',
-        color_continuous_scale='Viridis',
-        opacity=0.8,
-        labels={'MonthNum': 'Month', 'Revenue': 'Revenue ($)'}
-    )
-    
+    years = sorted(df['Year'].unique())
+    fig = go.Figure()
+
+    # Add "All Years" trace (aggregated)
+    agg_all = df.groupby(['MonthNum', 'Country'])[['Revenue']].sum().reset_index()
+    fig.add_trace(go.Scatter3d(
+        x=agg_all['MonthNum'],
+        y=agg_all['Country'],
+        z=agg_all['Revenue'],
+        mode='markers',
+        marker=dict(
+            size=6,
+            color=agg_all['Revenue'],
+            colorscale='Viridis',
+            opacity=0.8
+        ),
+        name='All Years',
+        visible=True,
+        hovertemplate="Month: %{x}<br>Country: %{y}<br>Revenue: $%{z:,.2f}<extra></extra>"
+    ))
+
+    # Add individual year traces
+    for year in years:
+        agg_year = df[df['Year'] == year].groupby(['MonthNum', 'Country'])[['Revenue']].sum().reset_index()
+        fig.add_trace(go.Scatter3d(
+            x=agg_year['MonthNum'],
+            y=agg_year['Country'],
+            z=agg_year['Revenue'],
+            mode='markers',
+            marker=dict(
+                size=6,
+                color=agg_year['Revenue'],
+                colorscale='Viridis',
+                opacity=0.8
+            ),
+            name=str(year),
+            visible=False,
+            hovertemplate=f"Year: {year}<br>Month: %{{x}}<br>Country: %{{y}}<br>Revenue: $%{{z:,.2f}}<extra></extra>"
+        ))
+
+    # Create dropdown buttons
+    buttons = []
+    # "All Years" button
+    buttons.append(dict(
+        method="update",
+        label="All Years",
+        args=[{"visible": [True] + [False] * len(years)},
+              {"title": "3D Analysis: Revenue Seasonality (All Years)"}]
+    ))
+    # Individual year buttons
+    for i, year in enumerate(years):
+        visible_flags = [False] * (len(years) + 1)
+        visible_flags[i + 1] = True
+        buttons.append(dict(
+            method="update",
+            label=str(year),
+            args=[{"visible": visible_flags},
+                  {"title": f"3D Analysis: Revenue Seasonality ({year})"}]
+        ))
+
     fig.update_layout(
+        updatemenus=[dict(
+            active=0,
+            buttons=buttons,
+            x=0.1, y=1.1,
+            xanchor='left', yanchor='top',
+            bgcolor=THEME_COLORS['background'],
+            font=dict(color=THEME_COLORS['text'])
+        )],
+        title='3D Analysis: Revenue Seasonality (All Years)',
         scene=dict(
             xaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Month'),
             yaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Country'),
@@ -204,26 +257,82 @@ def create_3d_scatter(df):
     return fig
 
 def create_employee_performance_3d(df):
-    """Create a 3D scatter plot of Employee performance across years"""
+    """Create a 3D scatter plot of Employee performance with Year selection"""
     df['Year'] = df['FullDate'].dt.year
     df['EmployeeName'] = df['FirstName'].astype(str) + ' ' + df['LastName'].astype(str)
     
-    emp_year_rev = df.groupby(['EmployeeName', 'Year'])['Revenue'].sum().reset_index()
+    years = sorted(df['Year'].unique())
+    fig = go.Figure()
+
+    # Add "All Years" trace
+    emp_all_rev = df.groupby(['EmployeeName'])['Revenue'].sum().reset_index()
+    # To keep it 3D, we'll plot against a dummy axis or just show the same for all years if needed, 
+    # but more logically we show all (Employee, Year, Revenue) points for "All Years"
+    emp_year_rev_all = df.groupby(['EmployeeName', 'Year'])['Revenue'].sum().reset_index()
     
-    fig = px.scatter_3d(
-        emp_year_rev,
-        x='EmployeeName',
-        y='Year',
-        z='Revenue',
-        color='Revenue',
-        size='Revenue',
-        title='3D Analysis: Employee Performance vs Year vs Revenue',
-        color_continuous_scale='Plasma',
-        opacity=0.9,
-        labels={'Revenue': 'Total Revenue ($)'}
-    )
-    
+    fig.add_trace(go.Scatter3d(
+        x=emp_year_rev_all['EmployeeName'],
+        y=emp_year_rev_all['Year'],
+        z=emp_year_rev_all['Revenue'],
+        mode='markers',
+        marker=dict(
+            size=8,
+            color=emp_year_rev_all['Revenue'],
+            colorscale='Plasma',
+            opacity=0.9
+        ),
+        name='All Years',
+        visible=True,
+        hovertemplate="Employee: %{x}<br>Year: %{y}<br>Revenue: $%{z:,.2f}<extra></extra>"
+    ))
+
+    # Add individual year traces
+    for year in years:
+        emp_year_rev = df[df['Year'] == year].groupby(['EmployeeName'])['Revenue'].sum().reset_index()
+        fig.add_trace(go.Scatter3d(
+            x=emp_year_rev['EmployeeName'],
+            y=[year] * len(emp_year_rev),
+            z=emp_year_rev['Revenue'],
+            mode='markers',
+            marker=dict(
+                size=10,
+                color=emp_year_rev['Revenue'],
+                colorscale='Plasma',
+                opacity=0.9
+            ),
+            name=str(year),
+            visible=False,
+            hovertemplate=f"Year: {year}<br>Employee: %{{x}}<br>Revenue: $%{{z:,.2f}}<extra></extra>"
+        ))
+
+    # Create dropdown buttons
+    buttons = []
+    buttons.append(dict(
+        method="update",
+        label="All Years",
+        args=[{"visible": [True] + [False] * len(years)},
+              {"title": "3D Analysis: Employee Performance (All Years)"}]
+    ))
+    for i, year in enumerate(years):
+        visible_flags = [False] * (len(years) + 1)
+        visible_flags[i + 1] = True
+        buttons.append(dict(
+            method="update",
+            label=str(year),
+            args=[{"visible": visible_flags},
+                  {"title": f"3D Analysis: Employee Performance ({year})"}]
+        ))
+
     fig.update_layout(
+        updatemenus=[dict(
+            active=0,
+            buttons=buttons,
+            x=0.1, y=1.1,
+            xanchor='left', yanchor='top',
+            bgcolor=THEME_COLORS['background'],
+            font=dict(color=THEME_COLORS['text'])
+        )],
+        title='3D Analysis: Employee Performance (All Years)',
         scene=dict(
             xaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Employee'),
             yaxis=dict(backgroundcolor=THEME_COLORS['background'], gridcolor=THEME_COLORS['grid'], title='Year'),
